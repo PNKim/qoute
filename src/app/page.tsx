@@ -21,7 +21,7 @@ type userType = string | null;
 type typeInput = string | number | undefined;
 
 export default function Home() {
-  const [qoute, setQoute] = useState([]);
+  const [qoute, setQoute] = useState<qouteType[]>([]);
   const [user, setUser] = useState<userType>("");
   const [addQoute, setAddQoute] = useState<typeInput>("");
   const [search, setSearch] = useState<typeInput>("");
@@ -29,6 +29,7 @@ export default function Home() {
   const [hidden, setHidden] = useState<keyValue>({});
   const [editQoute, setEditQoute] = useState<typeInput>("");
   const [userVote, setUserVote] = useState<string | number>("");
+  const [showOrderBy, setShowOrderBy] = useState(false);
 
   let decoded: string | JwtPayload | null = "";
   if (user) {
@@ -161,7 +162,7 @@ export default function Home() {
                 Add
               </button>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 relative">
               <label htmlFor="search">Search</label>
               <input
                 type="text"
@@ -170,6 +171,41 @@ export default function Home() {
                 onChange={searchChange}
                 className="px-2 py-1 bg-slate-300 rounded-xl outline-none"
               />
+              <button
+                type="button"
+                onClick={() => {
+                  setShowOrderBy(!showOrderBy);
+                }}
+                className="bg-orange-400 text-white font-bold px-4 py-2"
+              >
+                Sort
+              </button>
+              {showOrderBy ? (
+                <div className="absolute top-10 right-8 p-4 font-semibold bg-orange-200 bg-opacity-80 flex flex-col gap-2 rounded-b-xl">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowOrderBy(!showOrderBy);
+                      const newQoute = [...qoute];
+                      newQoute.sort((a, b) => a.id - b.id);
+                      setQoute(newQoute);
+                    }}
+                  >
+                    ascending
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowOrderBy(!showOrderBy);
+                      const newQoute = [...qoute];
+                      newQoute.sort((a, b) => b.id - a.id);
+                      setQoute(newQoute);
+                    }}
+                  >
+                    Descending
+                  </button>
+                </div>
+              ) : null}
             </div>
           </div>
           <ul className="w-full flex flex-col items-center gap-4">
@@ -178,7 +214,7 @@ export default function Home() {
                   return (
                     <li
                       key={index}
-                      className="w-[50%] p-4 bg-slate-300 rounded-xl"
+                      className="w-[50%] min-w-[300px] p-4 bg-slate-300 rounded-xl"
                     >
                       {hidden[item.id] ? (
                         <input
