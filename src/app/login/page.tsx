@@ -24,7 +24,8 @@ export default function Login() {
         `${process.env.NEXT_PUBLIC_API_URL}/authentication/login`,
         { username: username, password: password }
       );
-      localStorage.setItem("token", data.data.token);
+      localStorage.setItem("token", "Bearer " + data.data.token);
+      localStorage.setItem("qoute_vote", data.data.qoute_vote);
       setTimeout(() => {
         router.push("/");
       }, 500);
