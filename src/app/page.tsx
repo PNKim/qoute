@@ -34,7 +34,6 @@ export default function Home() {
   if (user) {
     decoded = jwt.decode(user.split(" ")[1]);
   }
-  console.log(userVote);
 
   const getQoute = async () => {
     try {
