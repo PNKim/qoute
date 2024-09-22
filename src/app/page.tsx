@@ -1,12 +1,27 @@
 "use client";
+import axios from "axios";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type qouteType = string[];
+type userType = string | null;
 
 export default function Home() {
-  const [qoute] = useState<qouteType>(["hello", "hey", "hi"]);
-  const [user] = useState("user");
+  const [qoute, setQoute] = useState<qouteType>([]);
+  const [user, setUser] = useState<userType>("");
+  const getQoute = async () => {
+    try {
+      const data = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}`);
+      setQoute(data.data);
+    } catch {
+      console.log("Connection Error");
+    }
+  };
+
+  useEffect(() => {
+    setUser(localStorage.getItem("token"));
+    getQoute();
+  }, []);
 
   return (
     <div className="w-full py-20 px-10 flex flex-col justify-center items-center">
@@ -16,7 +31,7 @@ export default function Home() {
       >
         Login
       </Link>
-      {user === "user" ? (
+      {user ? (
         <>
           <div className="flex items-center gap-4">
             <label htmlFor="search">Search</label>
@@ -27,20 +42,25 @@ export default function Home() {
             />
           </div>
           <ul className="w-full flex flex-col items-center gap-4">
-            {qoute.map((item, index) => {
-              return (
-                <li key={index} className="w-[50%] p-4 bg-slate-300 rounded-xl">
-                  <p>{item}</p>
-                  <p>Vote : score</p>
-                  <button
-                    type="button"
-                    className="bg-orange-400 text-white font-bold px-4 py-2 rounded-full"
-                  >
-                    Vote
-                  </button>
-                </li>
-              );
-            })}
+            {qoute[0]
+              ? qoute.map((item, index) => {
+                  return (
+                    <li
+                      key={index}
+                      className="w-[50%] p-4 bg-slate-300 rounded-xl"
+                    >
+                      <p>{item.product_id}</p>
+                      <p>Vote : score</p>
+                      <button
+                        type="button"
+                        className="bg-orange-400 text-white font-bold px-4 py-2 rounded-full"
+                      >
+                        Vote
+                      </button>
+                    </li>
+                  );
+                })
+              : null}
           </ul>
         </>
       ) : (

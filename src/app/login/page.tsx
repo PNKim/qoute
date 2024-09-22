@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 type typeInput = string | number;
 
@@ -15,6 +16,21 @@ export default function Login() {
 
   const passwordChange = (e: { target: { value: typeInput } }) => {
     setPassword(e.target.value);
+  };
+
+  const loginForm = async () => {
+    try {
+      const data = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/authentication/login`,
+        { username: username, password: password }
+      );
+      localStorage.setItem("token", data.data.token);
+      setTimeout(() => {
+        router.push("/");
+      }, 500);
+    } catch {
+      console.log("Connetion error");
+    }
   };
 
   return (
@@ -42,25 +58,24 @@ export default function Login() {
               value={password}
               onChange={passwordChange}
             />
+            <button
+              type="button"
+              onClick={loginForm}
+              className="text-white font-semibold bg-orange-500 hover:bg-orange-700 mt-2 py-2 px-6 rounded-full"
+            >
+              login
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                router.push("/register");
+              }}
+              className="text-balck font-semibold bg-white hover:text-white hover:bg-slate-400 mt-2 py-2 px-6 rounded-full"
+            >
+              Register
+            </button>
           </form>
         </main>
-        <footer className="w-full flex justify-center gap-2">
-          <button
-            type="button"
-            className="text-white font-semibold bg-orange-500 hover:bg-orange-700 py-2 px-6 rounded-full"
-          >
-            login
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              router.push("/register");
-            }}
-            className="text-balck font-semibold bg-white hover:text-white hover:bg-slate-400  py-2 px-6 rounded-full"
-          >
-            Register
-          </button>
-        </footer>
       </div>
     </section>
   );
